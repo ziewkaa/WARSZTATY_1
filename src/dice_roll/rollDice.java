@@ -10,69 +10,80 @@ public class rollDice {
 		try {
 			diceRolling();
 		} catch (Exception e) {
-			System.out.println("Error: ");
-			e.printStackTrace();
+			System.out.println("Error: " + e.getMessage());
 		}
 	}
-
-	static void diceRolling () {
+	
+	static void diceRolling() {
 		
 		Scanner scan = new Scanner(System.in);
-		System.out.println("Type the code to roll the dice!");
 		String answer = "";
+		String sign ;
+		int signIndex = -1;
 		int rounds = 1;
 		int diceType = 0;
-		int diceRange = 0;
-		int calculation = 0;
+		int positionOfD;
+		int additional = 0;
 		
-		String signType = "";
-		// take string 
-		answer = scan.next(); 
-		// analyze
-		if (answer.indexOf("D") == 0) {
-			if (answer.indexOf(signType = "+") != -1 || answer.indexOf(signType = "-") != -1 ) {
-				diceRange = answer.indexOf(signType);
-				diceType = Integer.parseInt(answer.substring(1, diceRange));
-				calculation = Integer.parseInt(answer.substring(diceRange +1));
-			} else {
-				signType =""; 
+		
+		System.out.println("Type the code to roll the dice!");
+		answer = scan.next();
+		
+		positionOfD = answer.indexOf("D");
+		
+		if (answer.contains(sign = "+") || answer.contains(sign = "-")) {
+			signIndex = answer.indexOf(sign);
+		} 
+		
+		if (positionOfD == 0) {
+			if (signIndex != -1) {
+				diceType = Integer.parseInt(answer.substring(1,signIndex));
+				additional = Integer.parseInt(answer.substring(signIndex + 1));
+			} else if (signIndex == -1) {
 				diceType = Integer.parseInt(answer.substring(1));
-				calculation = 0;
 			}
 		} else {
-			rounds = Integer.parseInt(answer.substring(0, answer.indexOf("D")));
-			if (answer.indexOf(signType = "+") != -1 || answer.indexOf(signType = "-") != -1 ) {
-				diceRange = answer.indexOf(signType);
-				diceType = Integer.parseInt(answer.substring(1, diceRange));
-				calculation = Integer.parseInt(answer.substring(diceRange +1));
-			} else {
-				signType =""; 
-				diceType = Integer.parseInt(answer.substring(1));
-				calculation = 0;
+			if (signIndex != -1) {
+				rounds = Integer.parseInt(answer.substring(0, positionOfD));
+				diceType = Integer.parseInt(answer.substring(positionOfD + 1,signIndex));
+				additional = Integer.parseInt(answer.substring(signIndex+1));
+			} else if (signIndex == -1){
+				rounds = Integer.parseInt(answer.substring(0, positionOfD));
+				diceType = Integer.parseInt(answer.substring(positionOfD + 1));
 			}
-		}	
-		
-		rollTheDice(rounds, diceType, calculation, signType );
-		scan.close();
-	}
-	
-	static void rollTheDice (int rounds, int diceType, int calculation, String signType) {
-		
-		int roll = randomNumber (diceType);
-		int counter = 0;
-		int result = 0;
-		
-		while (counter > rounds) {
-			result = roll + Integer.parseInt(signType) + calculation;
-			System.out.println(result);
 		}
+		System.out.print(rollTheDice ( rounds, diceType, additional, sign));
 	}
 	
-    static int randomNumber (int range) {
-    	
-    	Random rand = new Random();
-    	int number = rand.nextInt(range) + 1;
-    	return number;
-    	
-    }
+	 static int randomNumber (int range) {
+	    	
+	    	Random rand = new Random();
+	    	int number = rand.nextInt(range) + 1;
+	    	return number;
+	    	
+	    }
+
+	static int rollTheDice (int rounds, int diceType, int additional, String sign) {
+		
+		int result = 0;
+		int counter = 0;
+		
+		while(counter < rounds) {
+			result += randomNumber(diceType);
+			counter++;
+		}
+		
+		switch(sign) {
+		case "+":
+			result += additional;
+			return result;
+		case "-":
+			result -= additional;
+			return result;
+		default:
+			return result;
+		}
+		
+	}
+	
 }
